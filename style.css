@@ -1,0 +1,64 @@
+h1 {
+  margin-top: 22px;
+  margin-bottom: 22px;
+  font-size: 40px;
+}
+
+#startButton {
+  color: #ffffff;
+  background-color: #A72F2F;
+  border: outset;
+  border-color: hsl(0, 0%, 12%);
+  padding: 18px 38px;
+  text-align: center;
+  display: inline-block;
+  font-size: 18px;
+}
+
+#restart {
+  display: inline-block;
+}
+
+
+#chooseLevel {
+  color: #ffffff;
+  background-color:lightseagreen;
+  border: outset;
+  border-color: hsl(0, 0%, 6%);
+  padding: 8px 8px;
+  text-align: center;
+  display: inline-block;
+  font-size: 12px;
+}
+
+#playerColor {
+  color: #ffffff;
+  background-color:lightseagreen;
+  border: outset;
+  border-color: hsl(0, 0%, 12%);
+  padding: 12px 16px;
+  text-align: center;
+  display: inline-block;
+  font-size: 18px;
+}
+
+#defaultCanvas0 {
+  background: #222222;
+  margin: 22px;
+  border-style: solid;
+  border-width: 10px;
+  border-color: #000000;
+}
+
+body {
+  text-align: center;
+}
+
+html {
+  background: #A4A4A4 ; 
+}
+//#581845
+
+//#FFB000
+
+//#67C9C0
