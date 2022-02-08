@@ -184,7 +184,7 @@ function draw() {
   checkJump();
 }
 
-function checkJump(){
+function checkJump() {
   if (keyIsPressed && keyCode == 38) {
     playerOne.jump();
   }
@@ -209,12 +209,12 @@ function handleObstacles(player) {
   let size = random(15) + 10;
   spawnChance *= 1.0005;
   let currentChance = spawnChance * timeBetweenSpawn;
-  createObstacle(rand,currentChance,size);
+  createObstacle(rand, currentChance, size);
   //updates obstacles and checks their location
   obstacleUpdate(player);
 }
 
-function obstacleUpdate(player){
+function obstacleUpdate(player) {
   for (let i = 0; i < obstacles.length; i++) {
     if (obstacles[i].x + 100 >= player.x) {
       obstacles[i].move();
@@ -224,7 +224,7 @@ function obstacleUpdate(player){
   }
 }
 
-function createObstacle(rand,currentChance,size) {
+function createObstacle(rand, currentChance, size) {
   if (rand < currentChance) {
     obstacleType(new Rectangle(size, size, playerY, speed, 650));
   } else if (rand < currentChance * 2) {
@@ -234,10 +234,10 @@ function createObstacle(rand,currentChance,size) {
   }
 }
 
-function obstacleType(shape){
-      obstacles[obstacles.length] = shape;
-    speed += 0.1;
-    timeBetweenSpawn = 0;
+function obstacleType(shape) {
+  obstacles[obstacles.length] = shape;
+  speed += 0.1;
+  timeBetweenSpawn = 0;
 }
 
 function die() {
@@ -250,8 +250,8 @@ function die() {
   sound.pause();
 }
 
-function highScore(){
-    if (time > oldScore) {
+function highScore() {
+  if (time > oldScore) {
     text("New High Score: " + Math.floor(time), 300, 50);
     oldScore = Math.floor(time);
     console.log(oldScore);
@@ -262,7 +262,7 @@ function highScore(){
   }
 }
 
-function printDead(){
+function printDead() {
   textSize(50);
   text("You Are Dead", 150, 250);
   textSize(15);
@@ -272,15 +272,18 @@ function printDead(){
 }
 
 function restartGame() {
-  changePlayerColor();
-  dead = false;
-  spawnChance = 0.005;
-  speed = initialSpeed;
+  revertSet();
   fChoice = Math.floor(random(fCol.length));
   start();
   obstacles = [];
   time = 0;
-  var c = document.getElements
+}
+
+function revertSet() {
+  changePlayerColor();
+  dead = false;
+  spawnChance = 0.005;
+  speed = initialSpeed;
 }
 
 function changePlayerColor() {
