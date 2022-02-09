@@ -237,7 +237,7 @@ function createObstacle(rand, currentChance, size) {
 }
 
 function obstacleType(shape) {
-  obstacles[obstacles.length] = shape;
+  obstacles.push(shape);
   speed += 0.1;
   timeBetweenSpawn = 0;
 }
@@ -269,9 +269,6 @@ function printDead() {
   text("Click 'START!' to play a new game!", 185, 300);
   text("Press the 'UP' arrow to jump!", 195, 325);
   textSize(30);
-}
-
-function changePlayerColor() {
 }
 
 function easy() {
