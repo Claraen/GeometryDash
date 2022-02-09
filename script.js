@@ -5,12 +5,9 @@ let dead = false;
 let obstacles = [];
 let spawnChance = 0.005;
 let timeBetweenSpawn = 1;
-
-//miscellaneous global variables
 let reset = false;
 let restartButton;
 let playerOne;
-let playerY = 250;
 let speed = 6;
 let initialSpeed = 6;
 let time = 0;
@@ -19,7 +16,9 @@ let oldScore = 0;
 // Play mp3 through js. See functions start() and die()
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
-let sound = new Audio("audio/bensound-funkyelement.mp3");
+const sound = new Audio("audio/bensound-funkyelement.mp3");
+
+const floorY = 275;
 
 //determines color of obstacles, player, and floor:
 const obstacleColors = [
@@ -37,16 +36,15 @@ let playerColor = "pink";
 let floorColor;
 
 class Player {
-  constructor(startingY, startingX, size, jumpHeight) {
-    this.x = startingX;
-    this.y = startingY;
-    this.initialY = startingY;
+  constructor(x, y, size, jumpHeight) {
+    this.x = x;
+    this.y = y;
+    this.initialY = y;
     this.ySpeed = 0;
     this.size = size;
     this.jumpHeight = jumpHeight;
   }
 
-  //jumps when the space key is pressed
   jump() {
     if (this.y == this.initialY) {
       this.ySpeed = -this.jumpHeight;
@@ -54,9 +52,7 @@ class Player {
     }
   }
 
-  //moves the player up and down
   move() {
-    //console.log(this.ySpeed);
     if (this.y < this.initialY) {
       this.y += this.ySpeed;
       this.ySpeed += (0.1 * this.jumpHeight);
@@ -65,7 +61,6 @@ class Player {
     }
   }
 
-  //draws the obstacle at its location on screen
   draw() {
     if (!dead) {
       fill(playerColor);
@@ -80,7 +75,7 @@ function setup() {
   textSize(15);
   let canvasSize = 600;
   createCanvas(canvasSize, 2 * canvasSize / 3);
-  playerOne = new Player(playerY, 50, 25, 11);
+  playerOne = new Player(50, floorY - 25, 25, 11);
   frameRate(0);
 }
 
@@ -128,17 +123,15 @@ class Rectangle extends Obstacle {
     super(speed, x, y);
     this.xLength = xLength;
     this.yLength = yLength;
-    this.y += 25 - this.yLength;
   }
 
   draw() {
     fill(this.color);
-    rect(this.x, this.y, this.xLength, this.yLength);
+    rect(this.x, this.y - this.yLength, this.xLength, this.yLength);
     fill('white');
   }
 
   kill(player) {
-    //the collision might be a bit wonky
     dead == this.x <= player.x && (this.x + this.xLength) >= player.x && this.y <= player.y + 25;
   }
 }
@@ -148,7 +141,6 @@ class Triangle extends Obstacle {
     super(speed, x, y);
     this.xLength = xLength;
     this.yLength = yLength;
-    this.y += 25 - this.yLength;
   }
 
   draw() {
@@ -158,21 +150,27 @@ class Triangle extends Obstacle {
   }
 
   kill(player) {
-    //the collision might be a bit wonky
     dead = this.x <= player.x && (this.x + this.xLength) >= player.x && (this.y - this.yLength) <= player.y + 25;
   }
 }
 
 class Ball extends Obstacle {
-  constructor(size, y, speed) {
-    super(speed, 600, y);
+  constructor(speed, x, y, size) {
+    super(speed, x, y);
+    console.log("Making ball");
+    this.size = size;
   }
 
   draw() {
     fill(this.color);
-    circle(this.x + this.size / 2, this.y + this.size / 2, this.size)
+    circle(this.x + this.size / 2, this.y - this.size / 2, this.size);
     fill('white');
   }
+
+  kill(player) {
+    dead = this.x <= player.x && (this.x + this.size) >= player.x && (this.y - this.size) <= player.y + 25;
+  }
+
 }
 
 //updates the screen
@@ -200,7 +198,7 @@ function updateWorld(player) {
   player.move();
   handleObstacles(player);
   fill(floorColor);
-  rect(0, playerY + 25, 600, 600);
+  rect(0, floorY, 600, 600);
 }
 
 function handleObstacles(player) {
@@ -224,10 +222,13 @@ function maybeCreateObstacle() {
 
   if (random() < spawnChance * timeBetweenSpawn) {
     let size = random(15) + 10;
-    if (random() < 0.5) {
-      addObstacle(new Rectangle(speed, 650, playerY, size, size));
+    let r = random();
+    if (r < 0.33) {
+      addObstacle(new Rectangle(speed, 650, floorY, size, size));
+    } else if (r < 0.66) {
+      addObstacle(new Triangle(speed, 650, floorY, size, size));
     } else {
-      addObstacle(new Triangle(speed, 650, playerY + size, size, size));
+      addObstacle(new Ball(speed, 650, floorY, size));
     }
   } else {
     timeBetweenSpawn += 0.02;
