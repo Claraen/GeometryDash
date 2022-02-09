@@ -88,9 +88,8 @@ function setup() {
 
 function start() {
   document.getElementById("setUp").style.display = "none";
-
   startSound();
-  frameRate(speed);
+  frameRate(60);
 }
 
 function initializeState() {
@@ -129,13 +128,12 @@ class Rectangle extends Obstacle {
     this.color = Math.floor(random(obstacleColors.length));
   }
 
-  //draws the obstacle at its location on screen
   draw() {
     fill(obstacleColors[this.color]);
     rect(this.x, this.y, this.xLength, this.yLength);
     fill('white');
   }
-  //sets the value of the global variable "dead" to true, which should trigger the death function
+
   kill(player) {
     //the collision might be a bit wonky
     dead == this.x <= player.x && (this.x + this.xLength) >= player.x && this.y <= player.y + 25;
@@ -181,9 +179,9 @@ class Ball extends Obstacle {
     fill('white');
   }
 }
+
 //updates the screen
 function draw() {
-  frameRate(60); // FIXME: needed?
   updateWorld(playerOne);
   time += (1 / 25);
   textSize(15);
