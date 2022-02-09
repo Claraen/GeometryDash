@@ -201,15 +201,8 @@ function maybeCreateObstacle() {
   spawnChance *= 1.0005;
 
   if (random() < spawnChance * timeBetweenSpawn) {
-    let size = random(15) + 10;
-    let r = random();
-    if (r < 0.33) {
-      addObstacle(new Rectangle(speed, 650, floorY, size, size));
-    } else if (r < 0.66) {
-      addObstacle(new Triangle(speed, 650, floorY, size, size));
-    } else {
-      addObstacle(new Ball(speed, 650, floorY, size));
-    }
+    let cls = random([Rectangle, Triangle, Ball]);
+    addObstacle(new cls(speed, 650, floorY, random(15) + 10));
   } else {
     timeBetweenSpawn += 0.02;
   }
