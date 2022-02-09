@@ -115,6 +115,7 @@ class Obstacle {
     this.speed = speed;
     this.x = x;
     this.y = y;
+    this.color = random(obstacleColors);
   }
 
   move() {
@@ -123,12 +124,11 @@ class Obstacle {
 }
 
 class Rectangle extends Obstacle {
-  constructor(xLength, yLength, yPos, speed, startX) {
-    super(speed, startX, yPos);
+  constructor(xLength, yLength, y, speed, x) {
+    super(speed, x, y);
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
-    this.color = random(obstacleColors);
   }
 
   draw() {
@@ -144,12 +144,11 @@ class Rectangle extends Obstacle {
 }
 
 class Triangle extends Obstacle {
-  constructor(xLength, yLength, yPos, speed, startX) {
-    super(speed, startX, yPos);
+  constructor(xLength, yLength, y, speed, x) {
+    super(speed, x, y);
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
-    this.color = random(obstacleColors);
   }
 
   draw() {
@@ -165,9 +164,8 @@ class Triangle extends Obstacle {
 }
 
 class Ball extends Obstacle {
-  constructor(size, yPos, speed) {
-    super(speed, 600, yPos);
-    this.color = random(obstacleColors);
+  constructor(size, y, speed) {
+    super(speed, 600, y);
   }
 
   draw() {
