@@ -124,7 +124,7 @@ class Obstacle {
 }
 
 class Rectangle extends Obstacle {
-  constructor(xLength, yLength, y, speed, x) {
+  constructor(speed, x, y, xLength, yLength) {
     super(speed, x, y);
     this.xLength = xLength;
     this.yLength = yLength;
@@ -144,7 +144,7 @@ class Rectangle extends Obstacle {
 }
 
 class Triangle extends Obstacle {
-  constructor(xLength, yLength, y, speed, x) {
+  constructor(speed, x, y, xLength, yLength) {
     super(speed, x, y);
     this.xLength = xLength;
     this.yLength = yLength;
@@ -225,9 +225,9 @@ function maybeCreateObstacle() {
   if (random() < spawnChance * timeBetweenSpawn) {
     let size = random(15) + 10;
     if (random() < 0.5) {
-      addObstacle(new Rectangle(size, size, playerY, speed, 650));
+      addObstacle(new Rectangle(speed, 650, playerY, size, size));
     } else {
-      addObstacle(new Triangle(size, size, playerY + size, speed, 650));
+      addObstacle(new Triangle(speed, 650, playerY + size, size, size));
     }
   } else {
     timeBetweenSpawn += 0.02;
