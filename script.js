@@ -7,35 +7,35 @@ let spawnChance = 0.005;
 let timeBetweenSpawn = 1;
 
 //miscellaneous global variables
-var reset = false;
-var restartButton;
-var playerOne;
-var playerY = 250;
-var speed = 6;
-var initialSpeed = 6;
-var time = 0;
-var oldScore = 0;
+let reset = false;
+let restartButton;
+let playerOne;
+let playerY = 250;
+let speed = 6;
+let initialSpeed = 6;
+let time = 0;
+let oldScore = 0;
 
 // Play mp3 through js. See functions start() and die()
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
-var sound = new Audio("audio/bensound-funkyelement.mp3");
+let sound = new Audio("audio/bensound-funkyelement.mp3");
 sound.loop = true;
 
 //determines color of obstacles, player, and floor:
 const obstacleColors = [
-  "white", "lightblue", "azure", "chartreuse", "salmon", 
+  "white", "lightblue", "azure", "chartreuse", "salmon",
   "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"
 ];
 
 //handles the color of the floor (idk what the variable names mean)
 const floorColors = [
-  "blue", "rebeccapurple", "teal", "yellowgreen", "tomato", 
+  "blue", "rebeccapurple", "teal", "yellowgreen", "tomato",
   "orange", "indigo", "firebrick", "crimson", "coral"
 ];
 
-var playerColor = "pink";
-var fChoice = 0;
+let playerColor = "pink";
+let fChoice = 0;
 
 class Player {
   constructor(startingY, startingX, size, jumpHeight) {
@@ -81,7 +81,7 @@ function setup() {
   textSize(15);
   dead = false;
   score = 0;
-  var canvasSize = 600;
+  let canvasSize = 600;
   createCanvas(canvasSize, 2 * canvasSize / 3);
   playerOne = new Player(playerY, 50, 25, 11);
   frameRate(0);
@@ -89,7 +89,7 @@ function setup() {
 }
 
 function start() {
-  var el = document.getElementById("setUp");
+  let el = document.getElementById("setUp");
   el.style.display = "none";
   sound.currentTime = 0;
   sound.play();
@@ -243,7 +243,7 @@ function obstacleType(shape) {
 }
 
 function die() {
-  var el = document.getElementById("setUp");
+  let el = document.getElementById("setUp");
   el.style.display = "block";
   clear();
   fill(220, 20, 60);
