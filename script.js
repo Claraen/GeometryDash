@@ -132,7 +132,7 @@ class Rectangle extends Obstacle {
   }
 
   kill(player) {
-    dead == this.x <= player.x && (this.x + this.xLength) >= player.x && this.y <= player.y + 25;
+    dead == this.x <= player.x && (this.x + this.size) >= player.x && this.y <= player.y + 25;
   }
 }
 
@@ -143,7 +143,7 @@ class Triangle extends Obstacle {
   }
 
   kill(player) {
-    dead = this.x <= player.x && (this.x + this.xLength) >= player.x && (this.y - this.yLength) <= player.y + 25;
+    dead = this.x <= player.x && (this.x + this.size) >= player.x && (this.y - this.yLength) <= player.y + 25;
   }
 }
 
