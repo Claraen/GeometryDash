@@ -224,20 +224,19 @@ function maybeCreateObstacle() {
 
   spawnChance *= 1.0005;
 
-  let rand = random();
-  let size = random(15) + 10;
-  let currentChance = spawnChance * timeBetweenSpawn;
-
-  if (rand < currentChance) {
-    obstacleType(new Rectangle(size, size, playerY, speed, 650));
-  } else if (rand < currentChance * 2) {
-    obstacleType(new Triangle(size, size, playerY + size, speed, 650));
+  if (random() < spawnChance * timeBetweenSpawn) {
+    let size = random(15) + 10;
+    if (random() < 0.5) {
+      addObstacle(new Rectangle(size, size, playerY, speed, 650));
+    } else {
+      addObstacle(new Triangle(size, size, playerY + size, speed, 650));
+    }
   } else {
     timeBetweenSpawn += 0.02;
   }
 }
 
-function obstacleType(shape) {
+function addObstacle(shape) {
   obstacles.push(shape);
   speed += 0.1;
   timeBetweenSpawn = 0;
