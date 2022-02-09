@@ -106,11 +106,18 @@ function startSound() {
 
 
 class Obstacle {
-  constructor(speed, x, y) {
+  constructor(speed, x, y, size) {
     this.speed = speed;
     this.x = x;
     this.y = y;
+    this.size = size;
     this.color = random(obstacleColors);
+  }
+
+  draw() {
+    fill(this.color);
+    this.drawShape();
+    fill('white');
   }
 
   move() {
@@ -119,16 +126,9 @@ class Obstacle {
 }
 
 class Rectangle extends Obstacle {
-  constructor(speed, x, y, xLength, yLength) {
-    super(speed, x, y);
-    this.xLength = xLength;
-    this.yLength = yLength;
-  }
 
-  draw() {
-    fill(this.color);
-    rect(this.x, this.y - this.yLength, this.xLength, this.yLength);
-    fill('white');
+  drawShape() {
+    rect(this.x, this.y - this.size, this.size, this.size);
   }
 
   kill(player) {
@@ -137,16 +137,9 @@ class Rectangle extends Obstacle {
 }
 
 class Triangle extends Obstacle {
-  constructor(speed, x, y, xLength, yLength) {
-    super(speed, x, y);
-    this.xLength = xLength;
-    this.yLength = yLength;
-  }
 
-  draw() {
-    fill(this.color);
-    triangle(this.x, this.y, (this.x + this.xLength), this.y, this.x + (this.xLength / 2), (this.y - this.yLength));
-    fill('white');
+  drawShape() {
+    triangle(this.x, this.y, (this.x + this.size), this.y, this.x + (this.size / 2), (this.y - this.size));
   }
 
   kill(player) {
@@ -155,16 +148,9 @@ class Triangle extends Obstacle {
 }
 
 class Ball extends Obstacle {
-  constructor(speed, x, y, size) {
-    super(speed, x, y);
-    console.log("Making ball");
-    this.size = size;
-  }
 
-  draw() {
-    fill(this.color);
+  drawShape() {
     circle(this.x + this.size / 2, this.y - this.size / 2, this.size);
-    fill('white');
   }
 
   kill(player) {
