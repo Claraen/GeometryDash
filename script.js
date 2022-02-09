@@ -18,6 +18,7 @@ let oldScore = 0;
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 const sound = new Audio("audio/bensound-funkyelement.mp3");
 
+// The y position of the floor.
 const floorY = 275;
 
 //determines color of obstacles, player, and floor:
@@ -46,7 +47,7 @@ class Player {
   }
 
   jump() {
-    if (this.y == this.initialY) {
+    if (this.y === this.initialY) {
       this.ySpeed = -this.jumpHeight;
       this.y -= 0.5;
     }
@@ -54,10 +55,8 @@ class Player {
 
   move() {
     if (this.y < this.initialY) {
-      this.y += this.ySpeed;
+      this.y = constrain(this.y + this.ySpeed, 0, this.initialY);
       this.ySpeed += (0.1 * this.jumpHeight);
-    } else if (this.y > this.initialY) {
-      this.y = this.initialY;
     }
   }
 
