@@ -20,7 +20,6 @@ let oldScore = 0;
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 let sound = new Audio("audio/bensound-funkyelement.mp3");
-sound.loop = true;
 
 //determines color of obstacles, player, and floor:
 const obstacleColors = [
@@ -79,7 +78,6 @@ class Player {
 function setup() {
   clear();
   textSize(15);
-  dead = false;
   score = 0;
   let canvasSize = 600;
   createCanvas(canvasSize, 2 * canvasSize / 3);
@@ -89,12 +87,25 @@ function setup() {
 }
 
 function start() {
-  let el = document.getElementById("setUp");
-  el.style.display = "none";
-  sound.currentTime = 0;
-  sound.play();
+  document.getElementById("setUp").style.display = "none";
+
+  startSound();
   frameRate(speed);
 }
+
+function initializeState() {
+  dead = false;
+  spawnChance = 0.005;
+  speed = initialSpeed;
+}
+
+
+function startSound() {
+  sound.loop = true;
+  sound.currentTime = 0;
+  sound.play();
+}
+
 
 class Obstacle {
   constructor(speed, yPos, xPos) {
@@ -273,18 +284,11 @@ function printDead() {
 }
 
 function restartGame() {
-  revertSet();
+  changePlayerColor();
   fChoice = Math.floor(random(floorColors.length));
   start();
   obstacles = [];
   time = 0;
-}
-
-function revertSet() {
-  changePlayerColor();
-  dead = false;
-  spawnChance = 0.005;
-  speed = initialSpeed;
 }
 
 function changePlayerColor() {
