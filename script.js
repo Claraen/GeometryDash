@@ -34,7 +34,7 @@ const floorColors = [
 ];
 
 let playerColor = "pink";
-let fChoice = 0;
+let floorColor;
 
 class Player {
   constructor(startingY, startingX, size, jumpHeight) {
@@ -78,24 +78,28 @@ class Player {
 function setup() {
   clear();
   textSize(15);
-  score = 0;
   let canvasSize = 600;
   createCanvas(canvasSize, 2 * canvasSize / 3);
   playerOne = new Player(playerY, 50, 25, 11);
   frameRate(0);
-  fChoice = Math.floor(random(floorColors.length));
 }
 
 function start() {
   document.getElementById("setUp").style.display = "none";
+  initializeState();
   startSound();
   frameRate(60);
 }
 
 function initializeState() {
+  obstacles = [];
+  time = 0;
+  score = 0;
   dead = false;
   spawnChance = 0.005;
   speed = initialSpeed;
+  floorColor = random(floorColors);
+  playerColor = document.getElementById("playerColor").value;
 }
 
 
@@ -107,10 +111,10 @@ function startSound() {
 
 
 class Obstacle {
-  constructor(speed, yPos, xPos) {
-    this.y = yPos;
-    this.x = xPos;
+  constructor(speed, y, x) {
     this.speed = speed;
+    this.y = y;
+    this.x = x;
   }
 
   move() {
@@ -120,16 +124,15 @@ class Obstacle {
 
 class Rectangle extends Obstacle {
   constructor(xLength, yLength, yPos, speed, startX) {
-    //sets speed, x, and y
-    super(speed, yPos, startX); //600 is end of frame
+    super(speed, yPos, startX);
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
-    this.color = Math.floor(random(obstacleColors.length));
+    this.color = random(obstacleColors);
   }
 
   draw() {
-    fill(obstacleColors[this.color]);
+    fill(this.color);
     rect(this.x, this.y, this.xLength, this.yLength);
     fill('white');
   }
@@ -142,22 +145,19 @@ class Rectangle extends Obstacle {
 
 class Triangle extends Obstacle {
   constructor(xLength, yLength, yPos, speed, startX) {
-    //sets speed, x, and y
     super(speed, yPos, startX);
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
-    this.color = Math.floor(random(obstacleColors.length));
+    this.color = random(obstacleColors);
   }
 
-  //draws the obstacle at its location on screen
   draw() {
-    fill(obstacleColors[this.color]);
+    fill(this.color);
     triangle(this.x, this.y, (this.x + this.xLength), this.y, this.x + (this.xLength / 2), (this.y - this.yLength));
     fill('white');
   }
 
-  //sets the value of the global variable "dead" to true, which should trigger the death function
   kill(player) {
     //the collision might be a bit wonky
     dead = this.x <= player.x && (this.x + this.xLength) >= player.x && (this.y - this.yLength) <= player.y + 25;
@@ -166,15 +166,12 @@ class Triangle extends Obstacle {
 
 class Ball extends Obstacle {
   constructor(size, yPos, speed) {
-    //sets speed, x, and y
     super(speed, yPos, 600);
-    this.x = 600;
-    this.y = yPos;
-
+    this.color = random(obstacleColors);
   }
 
   draw() {
-    fill(obstacleColors);
+    fill(this.color);
     circle(this.x + this.size / 2, this.y + this.size / 2, this.size)
     fill('white');
   }
@@ -204,7 +201,7 @@ function updateWorld(player) {
   player.draw();
   player.move();
   handleObstacles(player);
-  fill(floorColors[fChoice]);
+  fill(floorColor);
   rect(0, playerY + 25, 600, 600);
 }
 
@@ -246,8 +243,7 @@ function obstacleType(shape) {
 }
 
 function die() {
-  let el = document.getElementById("setUp");
-  el.style.display = "block";
+  document.getElementById("setUp").style.display = "block";
   clear();
   fill(220, 20, 60);
   printDead();
@@ -275,16 +271,7 @@ function printDead() {
   textSize(30);
 }
 
-function restartGame() {
-  changePlayerColor();
-  fChoice = Math.floor(random(floorColors.length));
-  start();
-  obstacles = [];
-  time = 0;
-}
-
 function changePlayerColor() {
-  playerColor = document.getElementById("playerColor").value;
 }
 
 function easy() {

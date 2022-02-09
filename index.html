@@ -2,29 +2,24 @@
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>repl.it</title>
-	<script src="script.js">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>repl.it</title>
+        <script src="script.js">
 
-	</script>
-	<link href="style.css" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js">
+        </script>
+        <link href="style.css" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js">
 
-	</script>
+        </script>
 </head>
 
 <body>
-  <!-- Audio is moved to script.js -->
-  <!-- <audio>
-    <source src="audio/bensound-funkyelement.mp3" >
-  </audio> -->
-
-	<div id="setUp">
-		<h1>Geometry Dash - Hackathon II</h1>
-		<button id="startButton" onclick="restartGame()">START!</button>
+        <div id="setUp">
+                <h1>Geometry Dash - Hackathon II</h1>
+                <button id="startButton" onclick="start()">START!</button>
       <select id="playerColor">
-        <option value="white">Pick a Color!</option>
+        <option value="white" selected>Pick a Color!</option>
         <option value="pink">pink</option>
         <option value="red">red</option>
         <option value="aquamarine">aquamarine</option>
@@ -34,8 +29,6 @@
         <option value="gold">gold</option>
         <option value="white">white</option>
       </select>
-
-
 
       <button id="chooseLevel" onclick="easy()">Easy</button>
       <button id="chooseLevel" onclick="medium()">Medium</button>
