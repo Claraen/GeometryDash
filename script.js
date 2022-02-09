@@ -40,9 +40,9 @@ class Player {
   constructor(x, y, size, jumpHeight) {
     this.x = x;
     this.y = y;
+    this.size = size;
     this.initialY = y;
     this.ySpeed = 0;
-    this.size = size;
     this.jumpHeight = jumpHeight;
   }
 
@@ -61,11 +61,9 @@ class Player {
   }
 
   draw() {
-    if (!dead) {
-      fill(playerColor);
-      rect(this.x, this.y, this.size, this.size);
-      fill('white');
-    }
+    fill(playerColor);
+    rect(this.x, this.y, this.size, this.size);
+    fill('white');
   }
 }
 
