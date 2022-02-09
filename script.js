@@ -23,10 +23,18 @@ var sound = new Audio("audio/bensound-funkyelement.mp3");
 sound.loop = true;
 
 //determines color of obstacles, player, and floor:
-const obstacleColors = ["white", "lightblue", "azure", "chartreuse", "salmon", "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"];
-var pCol = "pink";
+const obstacleColors = [
+  "white", "lightblue", "azure", "chartreuse", "salmon", 
+  "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"
+];
+
 //handles the color of the floor (idk what the variable names mean)
-var fCol = ["blue", "rebeccapurple", "teal", "yellowgreen", "tomato", "orange", "indigo", "firebrick", "crimson", "coral"];
+const floorColors = [
+  "blue", "rebeccapurple", "teal", "yellowgreen", "tomato", 
+  "orange", "indigo", "firebrick", "crimson", "coral"
+];
+
+var playerColor = "pink";
 var fChoice = 0;
 
 class Player {
@@ -61,7 +69,7 @@ class Player {
   //draws the obstacle at its location on screen
   draw() {
     if (!dead) {
-      fill(pCol);
+      fill(playerColor);
       rect(this.x, this.y, this.size, this.size);
       fill('white');
     }
@@ -77,7 +85,7 @@ function setup() {
   createCanvas(canvasSize, 2 * canvasSize / 3);
   playerOne = new Player(playerY, 50, 25, 11);
   frameRate(0);
-  fChoice = Math.floor(random(fCol.length));
+  fChoice = Math.floor(random(floorColors.length));
 }
 
 function start() {
@@ -96,7 +104,6 @@ class Obstacle {
   }
 
   move() {
-    //console.log(this.ySpeed);
     if (this.y < this.initialY) {
       this.y += this.ySpeed;
       this.ySpeed += (0.1 * this.jumpHeight);
@@ -126,9 +133,7 @@ class Rectangle extends Obstacle {
   //sets the value of the global variable "dead" to true, which should trigger the death function
   kill(player) {
     //the collision might be a bit wonky
-    if (this.x <= player.x && (this.x + this.xLength) >= player.x && this.y <= player.y + 25) {
-      dead = true;
-    }
+    dead == this.x <= player.x && (this.x + this.xLength) >= player.x && this.y <= player.y + 25;
   }
 }
 
@@ -146,16 +151,13 @@ class Triangle extends Obstacle {
   draw() {
     fill(obstacleColors[this.color]);
     triangle(this.x, this.y, (this.x + this.xLength), this.y, this.x + (this.xLength / 2), (this.y - this.yLength));
-    //triangle(x1, y1, x2, y2, x3, y3)
     fill('white');
   }
 
   //sets the value of the global variable "dead" to true, which should trigger the death function
   kill(player) {
     //the collision might be a bit wonky
-    if (this.x <= player.x && (this.x + this.xLength) >= player.x && (this.y - this.yLength) <= player.y + 25) {
-      dead = true;
-    }
+    dead = this.x <= player.x && (this.x + this.xLength) >= player.x && (this.y - this.yLength) <= player.y + 25;
   }
 }
 
@@ -176,7 +178,7 @@ class Ball extends Obstacle {
 }
 //updates the screen
 function draw() {
-  frameRate(60);
+  frameRate(60); // FIXME: needed?
   updateWorld(playerOne);
   time += (1 / 25);
   textSize(15);
@@ -199,7 +201,7 @@ function updateWorld(player) {
   player.draw();
   player.move();
   handleObstacles(player);
-  fill(fCol[fChoice]);
+  fill(floorColors[fChoice]);
   rect(0, playerY + 25, 600, 600);
 }
 
@@ -255,8 +257,7 @@ function highScore() {
     text("New High Score: " + Math.floor(time), 300, 50);
     oldScore = Math.floor(time);
     console.log(oldScore);
-  }
-  else {
+  } else {
     text("Score: " + Math.floor(time), 350, 50);
     text("High Score: " + oldScore, 350, 80);
   }
@@ -273,7 +274,7 @@ function printDead() {
 
 function restartGame() {
   revertSet();
-  fChoice = Math.floor(random(fCol.length));
+  fChoice = Math.floor(random(floorColors.length));
   start();
   obstacles = [];
   time = 0;
@@ -287,22 +288,22 @@ function revertSet() {
 }
 
 function changePlayerColor() {
-  let color = document.getElementById("playerColor").value;
-  pCol = color;
+  playerColor = document.getElementById("playerColor").value;
 }
 
 function easy() {
-  speed = 6;
-  initialSpeed = 6;
+  initializeSpeed(6);
 }
 
 function medium() {
-  speed = 10;
-  initialSpeed = 10;
+  initializeSpeed(10);
 }
 
 function hard() {
-  speed = 12;
-  initialSpeed = 12;
+  initializeSpeed(12);
 }
 
+function initializeSpeed(s) {
+  speed = s;
+  initialSpeed = s;
+}
