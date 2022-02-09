@@ -115,12 +115,6 @@ class Obstacle {
   }
 
   move() {
-    if (this.y < this.initialY) {
-      this.y += this.ySpeed;
-      this.ySpeed += (0.1 * this.jumpHeight);
-    } else if (this.y > this.initialY) {
-      this.y = this.initialY;
-    }
     this.x -= this.speed;
   }
 }
