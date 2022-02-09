@@ -205,14 +205,8 @@ function updateWorld(player) {
   rect(0, playerY + 25, 600, 600);
 }
 
-//handles creating + updating obstacles
 function handleObstacles(player) {
-  let rand = random();
-  let size = random(15) + 10;
-  spawnChance *= 1.0005;
-  let currentChance = spawnChance * timeBetweenSpawn;
-  createObstacle(rand, currentChance, size);
-  //updates obstacles and checks their location
+  maybeCreateObstacle();
   obstacleUpdate(player);
 }
 
@@ -226,7 +220,14 @@ function obstacleUpdate(player) {
   }
 }
 
-function createObstacle(rand, currentChance, size) {
+function maybeCreateObstacle() {
+
+  spawnChance *= 1.0005;
+
+  let rand = random();
+  let size = random(15) + 10;
+  let currentChance = spawnChance * timeBetweenSpawn;
+
   if (rand < currentChance) {
     obstacleType(new Rectangle(size, size, playerY, speed, 650));
   } else if (rand < currentChance * 2) {
