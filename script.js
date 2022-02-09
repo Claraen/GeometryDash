@@ -104,6 +104,10 @@ function startSound() {
   sound.play();
 }
 
+function overlapping(low1, high1, low2, high2) {
+  return (low1 <= low2 && low2 <= high1) || (low2 <= low1 && low1 <= high2);
+}
+
 
 class Obstacle {
   constructor(speed, x, y, size) {
@@ -123,41 +127,31 @@ class Obstacle {
   move() {
     this.x -= this.speed;
   }
+
+  kill(player) {
+    dead = overlapping(this.x, this.x + this.size, player.x, player.x + player.size) &&
+      overlapping(this.y, this.y + this.size, player.y, player.y + player.size);
+  }
 }
 
 class Rectangle extends Obstacle {
-
   drawShape() {
     rect(this.x, this.y - this.size, this.size, this.size);
-  }
-
-  kill(player) {
-    dead == this.x <= player.x && (this.x + this.size) >= player.x && this.y <= player.y + 25;
   }
 }
 
 class Triangle extends Obstacle {
-
   drawShape() {
     triangle(this.x, this.y, (this.x + this.size), this.y, this.x + (this.size / 2), (this.y - this.size));
-  }
-
-  kill(player) {
-    dead = this.x <= player.x && (this.x + this.size) >= player.x && (this.y - this.yLength) <= player.y + 25;
   }
 }
 
 class Ball extends Obstacle {
-
   drawShape() {
     circle(this.x + this.size / 2, this.y - this.size / 2, this.size);
   }
-
-  kill(player) {
-    dead = this.x <= player.x && (this.x + this.size) >= player.x && (this.y - this.size) <= player.y + 25;
-  }
-
 }
+
 
 //updates the screen
 function draw() {
