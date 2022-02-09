@@ -111,10 +111,10 @@ function startSound() {
 
 
 class Obstacle {
-  constructor(speed, y, x) {
+  constructor(speed, x, y) {
     this.speed = speed;
-    this.y = y;
     this.x = x;
+    this.y = y;
   }
 
   move() {
@@ -124,7 +124,7 @@ class Obstacle {
 
 class Rectangle extends Obstacle {
   constructor(xLength, yLength, yPos, speed, startX) {
-    super(speed, yPos, startX);
+    super(speed, startX, yPos);
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
@@ -145,7 +145,7 @@ class Rectangle extends Obstacle {
 
 class Triangle extends Obstacle {
   constructor(xLength, yLength, yPos, speed, startX) {
-    super(speed, yPos, startX);
+    super(speed, startX, yPos);
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
@@ -166,7 +166,7 @@ class Triangle extends Obstacle {
 
 class Ball extends Obstacle {
   constructor(size, yPos, speed) {
-    super(speed, yPos, 600);
+    super(speed, 600, yPos);
     this.color = random(obstacleColors);
   }
 
