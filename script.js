@@ -124,14 +124,19 @@ class Obstacle {
     fill('white');
   }
 
+  isOffscreen() {
+    return this.x + this.size < 0;
+  }
+
   move() {
     this.x -= this.speed;
   }
 
-  kill(player) {
-    dead = overlapping(this.x, this.x + this.size, player.x, player.x + player.size) &&
+  hitPlayer(player) {
+    return overlapping(this.x, this.x + this.size, player.x, player.x + player.size) &&
       overlapping(this.y, this.y + this.size, player.y, player.y + player.size);
   }
+
 }
 
 class Rectangle extends Obstacle {
@@ -152,48 +157,70 @@ class Ball extends Obstacle {
   }
 }
 
-
-//updates the screen
+// P5 method called once per frame to update the screen.
 function draw() {
   updateWorld(playerOne);
+  drawWorld(playerOne);
+}
+
+function updateWorld(player) {
+  if (jumped()) {
+    player.jump();
+  }
+  player.move();
+  updateObstacles();
+  dead = checkHitPlayer(player);
+}
+
+function drawWorld(player) {
+  if (dead) {
+    die();
+  } else {
+    clear();
+    fill(floorColor);
+    rect(0, floorY, 600, 600);
+    player.draw();
+    drawObstacles();
+    updateScore();
+  }
+}
+
+function updateScore() {
   time += (1 / 25);
   textSize(15);
   text("Score: " + Math.floor(time), 525, 25);
-  checkJump();
 }
 
-function checkJump() {
-  if (keyIsPressed && keyCode == 38) {
-    playerOne.jump();
-  }
-  if (dead) {
-    die();
-  }
+function jumped() {
+  return keyIsPressed && keyCode == 38;
 }
 
-//updates the player and obstacles
-function updateWorld(player) {
-  clear();
-  player.draw();
-  player.move();
-  handleObstacles(player);
-  fill(floorColor);
-  rect(0, floorY, 600, 600);
-}
-
-function handleObstacles(player) {
+function updateObstacles() {
   maybeCreateObstacle();
-  obstacleUpdate(player);
+  moveObstacles();
 }
 
-function obstacleUpdate(player) {
-  for (let i = 0; i < obstacles.length; i++) {
-    if (obstacles[i].x + 100 >= player.x) {
-      obstacles[i].move();
-      obstacles[i].draw();
-      obstacles[i].kill(player);
+function moveObstacles() {
+  let remaining = [];
+  for (let o of obstacles) {
+    o.move();
+    if (!o.isOffscreen()) {
+      remaining.push(o);
     }
   }
+  obstacles = remaining;
+}
+
+function drawObstacles() {
+  obstacles.forEach(o => o.draw());
+}
+
+function checkHitPlayer(player) {
+  // This could be made more efficient by only checking obstacles
+  // until we get to the first obstacle whose x is greater than the
+  // right edge of the player. But there are never so many obstacles
+  // on the screen at once that that is likely to matter.
+  return obstacles.some(o => o.hitPlayer(player));
 }
 
 function maybeCreateObstacle() {
