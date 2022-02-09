@@ -1,10 +1,10 @@
 //if true, ends the game
-var dead = false;
+let dead = false;
 
 //contains all the obstacles currently being handled
-var obstacles = [];
-var spawnChance = 0.005;
-var timeBetweenSpawn = 1;
+let obstacles = [];
+let spawnChance = 0.005;
+let timeBetweenSpawn = 1;
 
 //miscellaneous global variables
 var reset = false;
@@ -23,7 +23,7 @@ var sound = new Audio("audio/bensound-funkyelement.mp3");
 sound.loop = true;
 
 //determines color of obstacles, player, and floor:
-var oCol = ["white", "lightblue", "azure", "chartreuse", "salmon", "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"];
+const obstacleColors = ["white", "lightblue", "azure", "chartreuse", "salmon", "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"];
 var pCol = "pink";
 //handles the color of the floor (idk what the variable names mean)
 var fCol = ["blue", "rebeccapurple", "teal", "yellowgreen", "tomato", "orange", "indigo", "firebrick", "crimson", "coral"];
@@ -60,7 +60,7 @@ class Player {
 
   //draws the obstacle at its location on screen
   draw() {
-    if (dead == false) {
+    if (!dead) {
       fill(pCol);
       rect(this.x, this.y, this.size, this.size);
       fill('white');
@@ -114,12 +114,12 @@ class Rectangle extends Obstacle {
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
-    this.color = Math.floor(random(oCol.length));
+    this.color = Math.floor(random(obstacleColors.length));
   }
 
   //draws the obstacle at its location on screen
   draw() {
-    fill(oCol[this.color]);
+    fill(obstacleColors[this.color]);
     rect(this.x, this.y, this.xLength, this.yLength);
     fill('white');
   }
@@ -139,12 +139,12 @@ class Triangle extends Obstacle {
     this.xLength = xLength;
     this.yLength = yLength;
     this.y += 25 - this.yLength;
-    this.color = Math.floor(random(oCol.length));
+    this.color = Math.floor(random(obstacleColors.length));
   }
 
   //draws the obstacle at its location on screen
   draw() {
-    fill(oCol[this.color]);
+    fill(obstacleColors[this.color]);
     triangle(this.x, this.y, (this.x + this.xLength), this.y, this.x + (this.xLength / 2), (this.y - this.yLength));
     //triangle(x1, y1, x2, y2, x3, y3)
     fill('white');
@@ -169,7 +169,7 @@ class Ball extends Obstacle {
   }
 
   draw() {
-    fill(oCol);
+    fill(obstacleColors);
     circle(this.x + this.size / 2, this.y + this.size / 2, this.size)
     fill('white');
   }
@@ -188,7 +188,7 @@ function checkJump() {
   if (keyIsPressed && keyCode == 38) {
     playerOne.jump();
   }
-  if (dead == true) {
+  if (dead) {
     die();
   }
 }
