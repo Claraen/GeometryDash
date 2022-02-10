@@ -168,7 +168,6 @@ function updateWorld(player) {
   }
   player.move();
   updateObstacles();
-  dead = checkHitPlayer(player);
 }
 
 function drawWorld(player) {
@@ -181,6 +180,7 @@ function drawWorld(player) {
     player.draw();
     drawObstacles();
     updateScore();
+    dead = checkHitPlayer(player);
   }
 }
 
