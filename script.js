@@ -192,7 +192,7 @@ function initializeState() {
   dead = false;
   speed = initialSpeed;
   startFrame = frameCount;
-  lastSpawn = frameCount; // we've got to set it to something
+  lastSpawn = frameCount - width; // force first spawn soon!
   floorColor = random(floorColors);
   playerColor = document.getElementById("playerColor").value;
 }
