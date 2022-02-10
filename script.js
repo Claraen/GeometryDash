@@ -231,7 +231,8 @@ function updateObstacles() {
 function maybeCreateObstacle() {
   if (random() < spawnChance()) {
     let cls = random([Rectangle, Triangle, Ball]);
-    obstacles.push(new cls(speed, 650, floorY, random(15) + 10));
+    let size = random(15) + 10;
+    obstacles.push(new cls(speed, width + size, floorY, size));
     speed += 0.1;
     lastSpawn = frameCount;
   }
