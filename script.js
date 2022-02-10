@@ -4,26 +4,6 @@ const canvasSize = 800;
 // The y position of the floor.
 const floorY = 275;
 
-// State that is reset for each game.
-let obstacles;
-let dead;
-let speed;
-let startFrame;
-let lastSpawn;
-let floorColor;
-let playerColor;
-
-let playerOne;
-let canvas;
-let highScore = 0;
-let initialSpeed = 6;
-
-// Play mp3 through js. See functions start() and die()
-// Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
-// Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
-const sound = new Audio("audio/bensound-funkyelement.mp3");
-
-
 //determines color of obstacles, player, and floor:
 const obstacleColors = [
   "white", "lightblue", "azure", "chartreuse", "salmon",
@@ -35,6 +15,28 @@ const floorColors = [
   "blue", "rebeccapurple", "teal", "yellowgreen", "tomato",
   "orange", "indigo", "firebrick", "crimson", "coral"
 ];
+
+// Play mp3 through js. See functions start() and die()
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
+const sound = new Audio("audio/bensound-funkyelement.mp3");
+
+
+// State that is reset for each game.
+let obstacles;
+let dead;
+let speed;
+let startFrame;
+let lastSpawn;
+let floorColor;
+let playerColor;
+
+// State that is set up once.
+let player;
+
+// State that persists across games.
+let highScore = 0;
+let initialSpeed = 6;
 
 
 class Player {
@@ -69,10 +71,8 @@ class Player {
 }
 
 function setup() {
-  clear();
-  textSize(15);
-  canvas = createCanvas(canvasSize, 2 * canvasSize / 3);
-  playerOne = new Player(50, floorY - 25, 25, 11);
+  createCanvas(canvasSize, 2 * canvasSize / 3);
+  player = new Player(50, floorY - 25, 25, 11);
   frameRate(0);
 }
 
@@ -99,7 +99,6 @@ function startSound() {
   sound.play();
 }
 
-
 class Obstacle {
   constructor(speed, x, y, size) {
     this.speed = speed;
@@ -123,7 +122,7 @@ class Obstacle {
     this.x -= this.speed;
   }
 
-  hitPlayer(player) {
+  hitPlayer() {
     return overlapping(this.x, this.x + this.size, player.x, player.x + player.size) &&
       overlapping(this.y, this.y + this.size, player.y, player.y + player.size);
   }
@@ -158,11 +157,11 @@ function p(x, y) {
 
 // P5 method called once per frame to update the screen.
 function draw() {
-  updateWorld(playerOne);
-  drawWorld(playerOne);
+  updateWorld();
+  drawWorld();
 }
 
-function updateWorld(player) {
+function updateWorld() {
   if (jumped()) {
     player.jump();
   }
@@ -170,24 +169,24 @@ function updateWorld(player) {
   updateObstacles();
 }
 
-function drawWorld(player) {
+function drawWorld() {
   clear();
   if (dead) {
     die();
   } else {
     fill(floorColor);
-    rect(0, floorY, canvas.width, floorY);
+    rect(0, floorY, width, floorY);
     player.draw();
     drawObstacles();
     updateScore();
-    dead = checkHitPlayer(player);
+    dead = checkHitPlayer();
   }
 }
 
 function updateScore() {
   textSize(15);
   textAlign(RIGHT);
-  text("Score: " + score(), canvas.width - 25, 25);
+  text("Score: " + score(), width - 25, 25);
 }
 
 function jumped() {
@@ -214,12 +213,12 @@ function drawObstacles() {
   obstacles.forEach(o => o.draw());
 }
 
-function checkHitPlayer(player) {
+function checkHitPlayer() {
   // This could be made more efficient by only checking obstacles
   // until we get to the first obstacle whose x is greater than the
   // right edge of the player. But there are never so many obstacles
   // on the screen at once that that is likely to matter.
-  return obstacles.some(o => o.hitPlayer(player));
+  return obstacles.some(o => o.hitPlayer());
 }
 
 function maybeCreateObstacle() {
@@ -248,7 +247,7 @@ function die() {
 
 function showScore(s) {
   textAlign(RIGHT);
-  let r = canvas.width - 25;
+  let r = width - 25;
   if (s > highScore) {
     text("New High Score: " + s, r, 50);
     highScore = s;
@@ -263,7 +262,7 @@ function score() {
 }
 
 function printDead() {
-  let mid = canvas.width / 2;
+  let mid = width / 2;
   textSize(50);
   textAlign(CENTER);
   text("You Are Dead", mid, 250);
