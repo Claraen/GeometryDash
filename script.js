@@ -1,8 +1,8 @@
 // Base size of the canvas
-const canvasSize = 800;
+const canvasSize = 600;
 
 // The y position of the floor.
-const floorY = 275;
+const floorY = canvasSize * 0.33;
 
 //determines color of obstacles, player, and floor:
 const obstacleColors = [
