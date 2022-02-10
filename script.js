@@ -330,7 +330,7 @@ function score() {
 
 // Check whether two ranges overlap.
 function overlapping(low1, high1, low2, high2) {
-  return (low1 <= low2 && low2 <= high1) || (low2 <= low1 && low1 <= high2);
+  return low1 <= high2 && high1 >= low2;
 }
 
 // Make a simple point object.
