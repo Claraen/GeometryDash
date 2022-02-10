@@ -6,6 +6,8 @@ let dead = false;
 let obstacles = [];
 let spawnChance = 0.005;
 let timeBetweenSpawn = 1;
+let extraTBS = 1;
+let lastSpawn = 0;
 let playerOne;
 let speed = 6;
 let initialSpeed = 6;
@@ -232,9 +234,12 @@ function maybeCreateObstacle() {
 }
 
 function addObstacle(shape) {
+  console.log(`timeBetweenSpawn: ${timeBetweenSpawn}; computed: ${extraTBS + (((frameCount - lastSpawn) - 1) * 0.02)}`);
   obstacles.push(shape);
   speed += 0.1;
   timeBetweenSpawn = 0;
+  extraTBS = 0;
+  lastSpawn = frameCount;
 }
 
 function die() {
