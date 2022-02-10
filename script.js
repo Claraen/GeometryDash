@@ -4,13 +4,13 @@ const canvasSize = 800;
 // The y position of the floor.
 const floorY = canvasSize * 0.33;
 
-//determines color of obstacles, player, and floor:
+// Possible colors for the obstacles.
 const obstacleColors = [
   "white", "lightblue", "azure", "chartreuse", "salmon",
   "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"
 ];
 
-//handles the color of the floor (idk what the variable names mean)
+// Possible colors for the floor.
 const floorColors = [
   "blue", "rebeccapurple", "teal", "yellowgreen", "tomato",
   "orange", "indigo", "firebrick", "crimson", "coral"
@@ -21,6 +21,8 @@ const floorColors = [
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 const sound = new Audio("audio/bensound-funkyelement.mp3");
 
+// State that is set up once (in setup())
+let player;
 
 // State that is reset for each game.
 let obstacles;
@@ -31,10 +33,7 @@ let lastSpawn;
 let floorColor;
 let playerColor;
 
-// State that is set up once.
-let player;
-
-// State that persists across games.
+// Mutable state that persists across games.
 let highScore = 0;
 let initialSpeed = 6;
 
@@ -97,7 +96,6 @@ class Obstacle {
     return overlapping(this.x, this.x + this.size, player.x, player.x + player.size) &&
       overlapping(this.y, this.y + this.size, player.y, player.y + player.size);
   }
-
 }
 
 class Rectangle extends Obstacle {
