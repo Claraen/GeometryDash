@@ -227,13 +227,15 @@ function maybeCreateObstacle() {
 
   spawnChance *= 1.0005;
 
-  let chance = spawnChance * timeBetweenSpawn;
+  let totalFrames = frameCount - startFrame;
+  let sinceSpawn = (frameCount - lastSpawn) - 1;
+
+  let oldChance = spawnChance * timeBetweenSpawn;
+
+  let chance = 0.005 * (1.0005 ** totalFrames) * (extraTBS + (sinceSpawn * 0.02));
 
   if (random() < chance) {
-    let sc = 0.005 * (1.0005 ** (frameCount - startFrame));
-    let tbs = extraTBS + (((frameCount - lastSpawn) - 1) * 0.02);
-    let chance2 = sc * tbs;
-    console.log(`chance: ${chance}; chance2: ${chance2}`);
+    console.log(`oldChance: ${oldChance}; chance: ${chance}`);
 
     let cls = random([Rectangle, Triangle, Ball]);
     addObstacle(new cls(speed, 650, floorY, random(15) + 10));
