@@ -1,308 +1,339 @@
-//if true, ends the game
-var dead = false;
+// Base size of the canvas
+const canvasSize = 800;
 
-//contains all the obstacles currently being handled
-var obstacles = [];
-var spawnChance = 0.005;
-var timeBetweenSpawn = 1;
+// The y position of the floor.
+const floorY = canvasSize * 0.33;
 
-//miscellaneous global variables
-var reset = false;
-var restartButton;
-var playerOne;
-var playerY = 250;
-var speed = 6;
-var initialSpeed = 6;
-var time = 0;
-var oldScore = 0;
+// Possible colors for the obstacles.
+const obstacleColors = [
+  "white", "lightblue", "azure", "chartreuse", "salmon",
+  "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"
+];
 
-// Play mp3 through js. See functions start() and die()
+// Possible colors for the floor.
+const floorColors = [
+  "blue", "rebeccapurple", "teal", "yellowgreen", "tomato",
+  "orange", "indigo", "firebrick", "crimson", "coral"
+];
+
+// Play mp3 through js. See functions startSound() and gameOver()
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
-var sound = new Audio("audio/bensound-funkyelement.mp3");
-sound.loop = true;
+const sound = new Audio("audio/bensound-funkyelement.mp3");
 
-//determines color of obstacles, player, and floor:
-var oCol = ["white", "lightblue", "azure", "chartreuse", "salmon", "lemonchiffon", "lightcyan", "palegreen", "paleturquoise"];
-var pCol = "pink";
-//handles the color of the floor (idk what the variable names mean)
-var fCol = ["blue", "rebeccapurple", "teal", "yellowgreen", "tomato", "orange", "indigo", "firebrick", "crimson", "coral"];
-var fChoice = 0;
+// State that is set up once (in setup())
+let player;
+
+// State that is reset for each game.
+let obstacles;
+let dead;
+let speed;
+let startFrame;
+let lastSpawn;
+let floorColor;
+let playerColor;
+
+// Mutable state that persists across games.
+let highScore = 0;
+let initialSpeed = 6;
+
 
 class Player {
-  constructor(startingY, startingX, size, jumpHeight) {
-    this.x = startingX;
-    this.y = startingY;
-    this.initialY = startingY;
-    this.ySpeed = 0;
+  constructor(x, y, size, jumpHeight) {
+    this.x = x;
+    this.y = y;
     this.size = size;
+    this.initialY = y;
+    this.ySpeed = 0;
     this.jumpHeight = jumpHeight;
   }
 
-  //jumps when the space key is pressed
   jump() {
-    if (this.y == this.initialY) {
+    if (this.y === this.initialY) {
       this.ySpeed = -this.jumpHeight;
       this.y -= 0.5;
     }
   }
 
-  //moves the player up and down
   move() {
-    //console.log(this.ySpeed);
     if (this.y < this.initialY) {
-      this.y += this.ySpeed;
+      this.y = constrain(this.y + this.ySpeed, 0, this.initialY);
       this.ySpeed += (0.1 * this.jumpHeight);
-    } else if (this.y > this.initialY) {
-      this.y = this.initialY;
     }
   }
 
-  //draws the obstacle at its location on screen
   draw() {
-    if (dead == false) {
-      fill(pCol);
-      rect(this.x, this.y, this.size, this.size);
-      fill('white');
-    }
+    fill(playerColor);
+    rect(this.x, this.y, this.size, this.size);
+    fill('white');
   }
-}
-
-function setup() {
-  clear();
-  textSize(15);
-  dead = false;
-  score = 0;
-  var canvasSize = 600;
-  createCanvas(canvasSize, 2 * canvasSize / 3);
-  playerOne = new Player(playerY, 50, 25, 11);
-  frameRate(0);
-  fChoice = Math.floor(random(fCol.length));
-}
-
-function start() {
-  var el = document.getElementById("setUp");
-  el.style.display = "none";
-  sound.currentTime = 0;
-  sound.play();
-  frameRate(speed);
 }
 
 class Obstacle {
-  constructor(speed, yPos, xPos) {
-    this.y = yPos;
-    this.x = xPos;
+  constructor(speed, x, y, size) {
     this.speed = speed;
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.color = random(obstacleColors);
+  }
+
+  draw() {
+    fill(this.color);
+    this.drawShape();
+    fill('white');
+  }
+
+  isOffscreen() {
+    return this.x + this.size < 0;
   }
 
   move() {
-    //console.log(this.ySpeed);
-    if (this.y < this.initialY) {
-      this.y += this.ySpeed;
-      this.ySpeed += (0.1 * this.jumpHeight);
-    } else if (this.y > this.initialY) {
-      this.y = this.initialY;
-    }
     this.x -= this.speed;
+  }
+
+  hitPlayer() {
+    return overlapping(this.x, this.x + this.size, player.x, player.x + player.size) &&
+      overlapping(this.y, this.y + this.size, player.y, player.y + player.size);
   }
 }
 
 class Rectangle extends Obstacle {
-  constructor(xLength, yLength, yPos, speed, startX) {
-    //sets speed, x, and y
-    super(speed, yPos, startX); //600 is end of frame
-    this.xLength = xLength;
-    this.yLength = yLength;
-    this.y += 25 - this.yLength;
-    this.color = Math.floor(random(oCol.length));
-  }
-
-  //draws the obstacle at its location on screen
-  draw() {
-    fill(oCol[this.color]);
-    rect(this.x, this.y, this.xLength, this.yLength);
-    fill('white');
-  }
-  //sets the value of the global variable "dead" to true, which should trigger the death function
-  kill(player) {
-    //the collision might be a bit wonky
-    if (this.x <= player.x && (this.x + this.xLength) >= player.x && this.y <= player.y + 25) {
-      dead = true;
-    }
+  drawShape() {
+    rect(this.x, this.y - this.size, this.size, this.size);
   }
 }
 
 class Triangle extends Obstacle {
-  constructor(xLength, yLength, yPos, speed, startX) {
-    //sets speed, x, and y
-    super(speed, yPos, startX);
-    this.xLength = xLength;
-    this.yLength = yLength;
-    this.y += 25 - this.yLength;
-    this.color = Math.floor(random(oCol.length));
-  }
-
-  //draws the obstacle at its location on screen
-  draw() {
-    fill(oCol[this.color]);
-    triangle(this.x, this.y, (this.x + this.xLength), this.y, this.x + (this.xLength / 2), (this.y - this.yLength));
-    //triangle(x1, y1, x2, y2, x3, y3)
-    fill('white');
-  }
-
-  //sets the value of the global variable "dead" to true, which should trigger the death function
-  kill(player) {
-    //the collision might be a bit wonky
-    if (this.x <= player.x && (this.x + this.xLength) >= player.x && (this.y - this.yLength) <= player.y + 25) {
-      dead = true;
-    }
+  drawShape() {
+    let p1 = p(this.x, this.y);
+    let p2 = p(this.x + this.size, this.y);
+    let p3 = p(this.x + (this.size / 2), this.y - this.size);
+    triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
   }
 }
 
 class Ball extends Obstacle {
-  constructor(size, yPos, speed) {
-    //sets speed, x, and y
-    super(speed, yPos, 600);
-    this.x = 600;
-    this.y = yPos;
-
-  }
-
-  draw() {
-    fill(oCol);
-    circle(this.x + this.size / 2, this.y + this.size / 2, this.size)
-    fill('white');
-  }
-}
-//updates the screen
-function draw() {
-  frameRate(60);
-  updateWorld(playerOne);
-  time += (1 / 25);
-  textSize(15);
-  text("Score: " + Math.floor(time), 525, 25);
-  checkJump();
-}
-
-function checkJump() {
-  if (keyIsPressed && keyCode == 38) {
-    playerOne.jump();
-  }
-  if (dead == true) {
-    die();
+  drawShape() {
+    circle(this.x + this.size / 2, this.y - this.size / 2, this.size);
   }
 }
 
-//updates the player and obstacles
-function updateWorld(player) {
-  clear();
-  player.draw();
-  player.move();
-  handleObstacles(player);
-  fill(fCol[fChoice]);
-  rect(0, playerY + 25, 600, 600);
-}
 
-//handles creating + updating obstacles
-function handleObstacles(player) {
-  let rand = random();
-  let size = random(15) + 10;
-  spawnChance *= 1.0005;
-  let currentChance = spawnChance * timeBetweenSpawn;
-  createObstacle(rand, currentChance, size);
-  //updates obstacles and checks their location
-  obstacleUpdate(player);
-}
-
-function obstacleUpdate(player) {
-  for (let i = 0; i < obstacles.length; i++) {
-    if (obstacles[i].x + 100 >= player.x) {
-      obstacles[i].move();
-      obstacles[i].draw();
-      obstacles[i].kill(player);
-    }
-  }
-}
-
-function createObstacle(rand, currentChance, size) {
-  if (rand < currentChance) {
-    obstacleType(new Rectangle(size, size, playerY, speed, 650));
-  } else if (rand < currentChance * 2) {
-    obstacleType(new Triangle(size, size, playerY + size, speed, 650));
-  } else {
-    timeBetweenSpawn += 0.02;
-  }
-}
-
-function obstacleType(shape) {
-  obstacles[obstacles.length] = shape;
-  speed += 0.1;
-  timeBetweenSpawn = 0;
-}
-
-function die() {
-  var el = document.getElementById("setUp");
-  el.style.display = "block";
-  clear();
-  fill(220, 20, 60);
-  printDead();
-  frameRate(0);
-  sound.pause();
-}
-
-function highScore() {
-  if (time > oldScore) {
-    text("New High Score: " + Math.floor(time), 300, 50);
-    oldScore = Math.floor(time);
-    console.log(oldScore);
-  }
-  else {
-    text("Score: " + Math.floor(time), 350, 50);
-    text("High Score: " + oldScore, 350, 80);
-  }
-}
-
-function printDead() {
-  textSize(50);
-  text("You Are Dead", 150, 250);
-  textSize(15);
-  text("Click 'START!' to play a new game!", 185, 300);
-  text("Press the 'UP' arrow to jump!", 195, 325);
-  textSize(30);
-}
-
-function restartGame() {
-  revertSet();
-  fChoice = Math.floor(random(fCol.length));
-  start();
-  obstacles = [];
-  time = 0;
-}
-
-function revertSet() {
-  changePlayerColor();
-  dead = false;
-  spawnChance = 0.005;
-  speed = initialSpeed;
-}
-
-function changePlayerColor() {
-  let color = document.getElementById("playerColor").value;
-  pCol = color;
-}
+//
+// Called from UI
+//
 
 function easy() {
-  speed = 6;
   initialSpeed = 6;
 }
 
 function medium() {
-  speed = 10;
   initialSpeed = 10;
 }
 
 function hard() {
-  speed = 12;
   initialSpeed = 12;
 }
 
+
+//
+// DOM UI manipulation
+//
+
+function showMenu() {
+  document.getElementById("setUp").style.display = "block";
+}
+
+function hideMenu() {
+  document.getElementById("setUp").style.display = "none";
+}
+
+
+//
+// P5 lifecycle methods
+//
+
+function setup() {
+  createCanvas(canvasSize, 2 * canvasSize / 3);
+  player = new Player(50, floorY - 25, 25, 11);
+  frameRate(0);
+}
+
+function draw() {
+  updateWorld();
+  drawWorld();
+}
+
+
+//
+// Our own lifecycle -- start is called from the start button in the
+// UI and kicks everything else off.
+//
+
+function start() {
+  hideMenu();
+  initializeState();
+  startSound();
+  frameRate(60);
+}
+
+function gameOver() {
+  showMenu();
+  drawGameOver();
+  frameRate(0);
+  sound.pause();
+}
+
+function initializeState() {
+  obstacles = [];
+  dead = false;
+  speed = initialSpeed;
+  startFrame = frameCount;
+  lastSpawn = frameCount - width; // force first spawn soon!
+  floorColor = random(floorColors);
+  playerColor = document.getElementById("playerColor").value;
+}
+
+function startSound() {
+  sound.loop = true;
+  sound.currentTime = 0;
+  sound.play();
+}
+
+//
+// Updating the state of the world before we redraw.
+//
+
+function updateWorld() {
+  updatePlayer();
+  updateObstacles();
+}
+
+function updatePlayer() {
+  if (jumped()) {
+    player.jump();
+  }
+  player.move();
+}
+
+function jumped() {
+  return keyIsPressed && keyCode == 38;
+}
+
+function updateObstacles() {
+  maybeCreateObstacle();
+  moveObstacles();
+}
+
+function maybeCreateObstacle() {
+  if (random() < spawnChance()) {
+    let cls = random([Rectangle, Triangle, Ball]);
+    let size = random(15) + 10;
+    obstacles.push(new cls(speed, width + size, floorY, size));
+    speed += 0.1;
+    lastSpawn = frameCount;
+  }
+}
+
+function spawnChance() {
+  let totalFrames = frameCount - startFrame;
+  let sinceSpawn = frameCount - lastSpawn;
+  return 0.0001 * sinceSpawn * (1.0005 ** totalFrames);
+}
+
+function moveObstacles() {
+  let stillOnScreen = [];
+  for (let o of obstacles) {
+    o.move();
+    if (!o.isOffscreen()) {
+      stillOnScreen.push(o);
+    }
+  }
+  obstacles = stillOnScreen;
+}
+
+
+//
+// Drawing the updated world.
+//
+
+function drawWorld() {
+  clear();
+  if (!dead) {
+    drawFloor();
+    player.draw();
+    obstacles.forEach(o => o.draw());
+    drawScore();
+    dead = checkHitPlayer();
+  } else {
+    gameOver();
+  }
+}
+
+function drawFloor() {
+  fill(floorColor);
+  rect(0, floorY, width, floorY);
+}
+
+function drawScore() {
+  textSize(15);
+  textAlign(RIGHT);
+  text("Score: " + score(), width - 25, 25);
+}
+
+function checkHitPlayer() {
+  // This could be made more efficient by only checking obstacles
+  // until we get to the first obstacle whose x is greater than the
+  // right edge of the player. But there are never so many obstacles
+  // on the screen at once that that is likely to matter.
+  return obstacles.some(o => o.hitPlayer());
+}
+
+function drawGameOver() {
+  fill(220, 20, 60);
+  drawFinalMessage();
+  drawFinalScore(score());
+}
+
+function drawFinalMessage() {
+  let mid = width / 2;
+  textSize(50);
+  textAlign(CENTER);
+  text("You Are Dead", mid, 250);
+  textSize(15);
+  text("Click 'START!' to play a new game!", mid, 300);
+  text("Press the 'UP' arrow to jump!", mid, 325);
+  textSize(30);
+}
+
+function drawFinalScore(s) {
+  textAlign(RIGHT);
+  let r = width - 25;
+  if (s > highScore) {
+    text("New High Score: " + s, r, 50);
+    highScore = s;
+  } else {
+    text("Score: " + s, r, 50);
+    text("High Score: " + highScore, r, 80);
+  }
+}
+
+//
+// Utility functions
+//
+
+// Compute the score based on the number of frames that have gone by.
+function score() {
+  return Math.floor((frameCount - startFrame) / 25);
+}
+
+// Check whether two ranges overlap.
+function overlapping(low1, high1, low2, high2) {
+  return low1 <= high2 && high1 >= low2;
+}
+
+// Make a simple point object.
+function p(x, y) {
+  return {x: x, y: y};
+}
