@@ -1,5 +1,5 @@
 // Base size of the canvas
-const canvasSize = 600;
+const canvasSize = 800;
 
 // The y position of the floor.
 const floorY = canvasSize * 0.33;
