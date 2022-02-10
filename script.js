@@ -1,5 +1,5 @@
 // Base size of the canvas
-const canvasSize = 600;
+const canvasSize = 800;
 
 // The y position of the floor.
 const floorY = 275;
@@ -186,7 +186,8 @@ function drawWorld(player) {
 
 function updateScore() {
   textSize(15);
-  text("Score: " + score(), 525, 25);
+  textAlign(RIGHT);
+  text("Score: " + score(), canvas.width - 25, 25);
 }
 
 function jumped() {
@@ -246,12 +247,14 @@ function die() {
 }
 
 function showScore(s) {
+  textAlign(RIGHT);
+  let r = canvas.width - 25;
   if (s > highScore) {
-    text("New High Score: " + s, 300, 50);
+    text("New High Score: " + s, r, 50);
     highScore = s;
   } else {
-    text("Score: " + s, 350, 50);
-    text("High Score: " + highScore, 350, 80);
+    text("Score: " + s, r, 50);
+    text("High Score: " + highScore, r, 80);
   }
 }
 
@@ -260,11 +263,13 @@ function score() {
 }
 
 function printDead() {
+  let mid = canvas.width / 2;
   textSize(50);
-  text("You Are Dead", 150, 250);
+  textAlign(CENTER);
+  text("You Are Dead", mid, 250);
   textSize(15);
-  text("Click 'START!' to play a new game!", 185, 300);
-  text("Press the 'UP' arrow to jump!", 195, 325);
+  text("Click 'START!' to play a new game!", mid, 300);
+  text("Press the 'UP' arrow to jump!", mid, 325);
   textSize(30);
 }
 
