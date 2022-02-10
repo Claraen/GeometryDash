@@ -2,16 +2,15 @@
 let dead = false;
 
 //contains all the obstacles currently being handled
+
 let obstacles = [];
 let spawnChance = 0.005;
 let timeBetweenSpawn = 1;
-let reset = false;
-let restartButton;
 let playerOne;
 let speed = 6;
 let initialSpeed = 6;
 let time = 0;
-let oldScore = 0;
+let highScore = 0;
 
 // Play mp3 through js. See functions start() and die()
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
@@ -77,7 +76,7 @@ function setup() {
 }
 
 function start() {
-  document.getElementById("setUp").style.display = "none";
+  hideMenu();
   initializeState();
   startSound();
   frameRate(60);
@@ -239,22 +238,23 @@ function addObstacle(shape) {
 }
 
 function die() {
-  document.getElementById("setUp").style.display = "block";
+  showMenu();
   clear();
   fill(220, 20, 60);
   printDead();
+  showScore();
   frameRate(0);
   sound.pause();
 }
 
-function highScore() {
-  if (time > oldScore) {
+function showScore() {
+  if (time > highScore) {
     text("New High Score: " + Math.floor(time), 300, 50);
-    oldScore = Math.floor(time);
-    console.log(oldScore);
+    highScore = Math.floor(time);
+    console.log(highScore);
   } else {
     text("Score: " + Math.floor(time), 350, 50);
-    text("High Score: " + oldScore, 350, 80);
+    text("High Score: " + highScore, 350, 80);
   }
 }
 
@@ -282,4 +282,13 @@ function hard() {
 function initializeSpeed(s) {
   speed = s;
   initialSpeed = s;
+}
+
+
+function showMenu() {
+  document.getElementById("setUp").style.display = "block";
+}
+
+function hideMenu() {
+  document.getElementById("setUp").style.display = "none";
 }
