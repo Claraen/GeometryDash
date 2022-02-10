@@ -4,6 +4,7 @@ let dead = false;
 //contains all the obstacles currently being handled
 
 let obstacles = [];
+let startFrame;
 let spawnChance = 0.005;
 let timeBetweenSpawn = 1;
 let extraTBS = 1;
@@ -85,6 +86,7 @@ function start() {
 }
 
 function initializeState() {
+  startFrame = frameCount;
   obstacles = [];
   time = 0;
   score = 0;
@@ -225,7 +227,14 @@ function maybeCreateObstacle() {
 
   spawnChance *= 1.0005;
 
-  if (random() < spawnChance * timeBetweenSpawn) {
+  let chance = spawnChance * timeBetweenSpawn;
+
+  if (random() < chance) {
+    let sc = 0.005 * (1.0005 ** (frameCount - startFrame));
+    let tbs = extraTBS + (((frameCount - lastSpawn) - 1) * 0.02);
+    let chance2 = sc * tbs;
+    console.log(`chance: ${chance}; chance2: ${chance2}`);
+
     let cls = random([Rectangle, Triangle, Ball]);
     addObstacle(new cls(speed, 650, floorY, random(15) + 10));
   } else {
@@ -235,6 +244,7 @@ function maybeCreateObstacle() {
 
 function addObstacle(shape) {
   console.log(`timeBetweenSpawn: ${timeBetweenSpawn}; computed: ${extraTBS + (((frameCount - lastSpawn) - 1) * 0.02)}`);
+  console.log(frameCount);
   obstacles.push(shape);
   speed += 0.1;
   timeBetweenSpawn = 0;
