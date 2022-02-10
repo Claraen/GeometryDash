@@ -1,27 +1,28 @@
-//if true, ends the game
-let dead = false;
+// Base size of the canvas
+const canvasSize = 600;
 
-//contains all the obstacles currently being handled
+// The y position of the floor.
+const floorY = 275;
 
-let obstacles = [];
+// State that is reset for each game.
+let obstacles;
+let dead;
+let speed;
 let startFrame;
-let spawnChance = 0.005;
-let timeBetweenSpawn = 1;
-let extraTBS = 1;
-let lastSpawn = 0;
+let lastSpawn;
+let floorColor;
+let playerColor;
+
 let playerOne;
-let speed = 6;
-let initialSpeed = 6;
-let time = 0;
+let canvas;
 let highScore = 0;
+let initialSpeed = 6;
 
 // Play mp3 through js. See functions start() and die()
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 const sound = new Audio("audio/bensound-funkyelement.mp3");
 
-// The y position of the floor.
-const floorY = 275;
 
 //determines color of obstacles, player, and floor:
 const obstacleColors = [
@@ -35,8 +36,6 @@ const floorColors = [
   "orange", "indigo", "firebrick", "crimson", "coral"
 ];
 
-let playerColor = "pink";
-let floorColor;
 
 class Player {
   constructor(x, y, size, jumpHeight) {
@@ -72,8 +71,7 @@ class Player {
 function setup() {
   clear();
   textSize(15);
-  let canvasSize = 600;
-  createCanvas(canvasSize, 2 * canvasSize / 3);
+  canvas = createCanvas(canvasSize, 2 * canvasSize / 3);
   playerOne = new Player(50, floorY - 25, 25, 11);
   frameRate(0);
 }
@@ -86,26 +84,19 @@ function start() {
 }
 
 function initializeState() {
-  startFrame = frameCount;
   obstacles = [];
-  time = 0;
-  score = 0;
   dead = false;
-  spawnChance = 0.005;
   speed = initialSpeed;
+  startFrame = frameCount;
+  lastSpawn = frameCount; // we've got to set it to something
   floorColor = random(floorColors);
   playerColor = document.getElementById("playerColor").value;
 }
-
 
 function startSound() {
   sound.loop = true;
   sound.currentTime = 0;
   sound.play();
-}
-
-function overlapping(low1, high1, low2, high2) {
-  return (low1 <= low2 && low2 <= high1) || (low2 <= low1 && low1 <= high2);
 }
 
 
@@ -147,7 +138,10 @@ class Rectangle extends Obstacle {
 
 class Triangle extends Obstacle {
   drawShape() {
-    triangle(this.x, this.y, (this.x + this.size), this.y, this.x + (this.size / 2), (this.y - this.size));
+    let p1 = p(this.x, this.y);
+    let p2 = p(this.x + this.size, this.y);
+    let p3 = p(this.x + (this.size / 2), this.y - this.size);
+    triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
   }
 }
 
@@ -156,6 +150,11 @@ class Ball extends Obstacle {
     circle(this.x + this.size / 2, this.y - this.size / 2, this.size);
   }
 }
+
+function p(x, y) {
+  return {x: x, y: y};
+}
+
 
 // P5 method called once per frame to update the screen.
 function draw() {
@@ -173,12 +172,12 @@ function updateWorld(player) {
 }
 
 function drawWorld(player) {
+  clear();
   if (dead) {
     die();
   } else {
-    clear();
     fill(floorColor);
-    rect(0, floorY, 600, 600);
+    rect(0, floorY, canvas.width, floorY);
     player.draw();
     drawObstacles();
     updateScore();
@@ -186,9 +185,8 @@ function drawWorld(player) {
 }
 
 function updateScore() {
-  time += (1 / 25);
   textSize(15);
-  text("Score: " + Math.floor(time), 525, 25);
+  text("Score: " + score(), 525, 25);
 }
 
 function jumped() {
@@ -201,14 +199,14 @@ function updateObstacles() {
 }
 
 function moveObstacles() {
-  let remaining = [];
+  let stillOnScreen = [];
   for (let o of obstacles) {
     o.move();
     if (!o.isOffscreen()) {
-      remaining.push(o);
+      stillOnScreen.push(o);
     }
   }
-  obstacles = remaining;
+  obstacles = stillOnScreen;
 }
 
 function drawObstacles() {
@@ -224,55 +222,41 @@ function checkHitPlayer(player) {
 }
 
 function maybeCreateObstacle() {
-
-  spawnChance *= 1.0005;
-
-  let totalFrames = frameCount - startFrame;
-  let sinceSpawn = (frameCount - lastSpawn) - 1;
-
-  let oldChance = spawnChance * timeBetweenSpawn;
-
-  let chance = 0.005 * (1.0005 ** totalFrames) * (extraTBS + (sinceSpawn * 0.02));
-
-  if (random() < chance) {
-    console.log(`oldChance: ${oldChance}; chance: ${chance}`);
-
+  if (random() < spawnChance()) {
     let cls = random([Rectangle, Triangle, Ball]);
-    addObstacle(new cls(speed, 650, floorY, random(15) + 10));
-  } else {
-    timeBetweenSpawn += 0.02;
+    obstacles.push(new cls(speed, 650, floorY, random(15) + 10));
+    speed += 0.1;
+    lastSpawn = frameCount;
   }
 }
 
-function addObstacle(shape) {
-  console.log(`timeBetweenSpawn: ${timeBetweenSpawn}; computed: ${extraTBS + (((frameCount - lastSpawn) - 1) * 0.02)}`);
-  console.log(frameCount);
-  obstacles.push(shape);
-  speed += 0.1;
-  timeBetweenSpawn = 0;
-  extraTBS = 0;
-  lastSpawn = frameCount;
+function spawnChance() {
+  let totalFrames = frameCount - startFrame;
+  let sinceSpawn = frameCount - lastSpawn;
+  return 0.0001 * sinceSpawn * (1.0005 ** totalFrames);
 }
 
 function die() {
   showMenu();
-  clear();
   fill(220, 20, 60);
   printDead();
-  showScore();
+  showScore(score());
   frameRate(0);
   sound.pause();
 }
 
-function showScore() {
-  if (time > highScore) {
-    text("New High Score: " + Math.floor(time), 300, 50);
-    highScore = Math.floor(time);
-    console.log(highScore);
+function showScore(s) {
+  if (s > highScore) {
+    text("New High Score: " + s, 300, 50);
+    highScore = s;
   } else {
-    text("Score: " + Math.floor(time), 350, 50);
+    text("Score: " + s, 350, 50);
     text("High Score: " + highScore, 350, 80);
   }
+}
+
+function score() {
+  return Math.floor((frameCount - startFrame) / 25);
 }
 
 function printDead() {
@@ -308,4 +292,9 @@ function showMenu() {
 
 function hideMenu() {
   document.getElementById("setUp").style.display = "none";
+}
+
+// Check whether two ranges overlap.
+function overlapping(low1, high1, low2, high2) {
+  return (low1 <= low2 && low2 <= high1) || (low2 <= low1 && low1 <= high2);
 }
