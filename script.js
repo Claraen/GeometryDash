@@ -16,7 +16,7 @@ const floorColors = [
   "orange", "indigo", "firebrick", "crimson", "coral"
 ];
 
-// Play mp3 through js. See functions start() and die()
+// Play mp3 through js. See functions startSound() and gameOver()
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement/Audio
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 const sound = new Audio("audio/bensound-funkyelement.mp3");
